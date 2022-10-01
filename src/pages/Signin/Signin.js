@@ -45,10 +45,12 @@ export default function Signin() {
       body: JSON.stringify(requestBody)
     })
       .then((data) => {
-        if (data.status !== 200) throw new Error("HTTP status " + data.status);
+        if (data.status !== 200) {
+          return data.json().then(dataReadable => { throw new Error(dataReadable.message) })
+        }
 
         // En cas de succès
-        setState({ ...state, loading: false, success: true })
+        setState({ ...state, error: "", loading: false, success: true })
       })
       .catch((error) => {
         // En cas d'erreur
