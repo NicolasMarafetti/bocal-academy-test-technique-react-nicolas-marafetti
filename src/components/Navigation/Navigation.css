@@ -1,0 +1,14 @@
+nav {
+  border-top: 1px solid grey;
+  border-bottom: 1px solid grey;
+}
+
+nav ul{
+  list-style-type: none;
+}
+
+nav ul li a{
+  color: purple;
+  margin: 0 10px;
+  text-decoration: none;
+}
