@@ -46,11 +46,21 @@ export default function Login() {
       body: JSON.stringify(requestBody)
     })
       .then((response) => {
-        if (response.status !== 200) throw new Error("HTTP status " + response.status);
+        if (response.status !== 200) {
+          return response.json().then(dataReadable => { throw new Error(dataReadable.message) })
+        }
 
         return response.json()
       })
       .then((data) => {
+        if (!data.token) {
+          if (data.message) {
+            throw new Error(data.message)
+          } else {
+            throw new Error("Erreur")
+          }
+        }
+
         // Récupération du token
         const token = data.token;
 
@@ -82,7 +92,7 @@ export default function Login() {
           {state.error && <p>{state.error}</p>}
         </div>
         <div>
-          <input disabled={state.success || state.loading} type="submit" value="S'inscrire" />
+          <input disabled={state.success || state.loading} type="submit" value="Connexion" />
         </div>
       </form>
     </main>
