@@ -1,17 +1,35 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useReducer } from 'react'
 
 import "./Posts.css";
 
 const SERVER_URL = "https://social-network-api.osc-fr1.scalingo.io/";
 const PROJECT_NAME = "test-technique-react-nicolas-marafetti";
 
+const initialState = { error: "", loading: false, page: 0, posts: [] };
+
+const reducer = (state, action) => {
+  switch (action.type) {
+    case 'next-page': {
+      return { ...state, page: state.page + 1 }
+    }
+    case 'update-posts': {
+      return { ...state, posts: action.payload }
+    }
+    case 'set-error': {
+      return { ...state, error: action.payload, loading: false, posts: [] }
+    }
+    default:
+      return initialState;
+  }
+}
+
 /**
  * Cette fonction est un composant React qui représente la page des publication.
  */
 export default function Posts() {
 
-  const [state, setState] = useState({ page: 0, posts: [] })
+  const [state, dispatch] = useReducer(reducer, initialState)
 
   /**
    * Récupération des posts au moment de la création de la page
@@ -30,14 +48,11 @@ export default function Posts() {
         return response.json();
       })
       .then((data) => {
-        setState({
-          ...state,
-          posts: data.posts
-        })
+        dispatch({ type: 'update-posts', payload: data.posts })
       })
       .catch((error) => {
         // En cas d'erreur
-        setState({ ...state, loading: false, error: error.toString() })
+        dispatch({ type: 'set-error', payload: error.toString() })
       })
   }, [state.page])
 
@@ -45,14 +60,14 @@ export default function Posts() {
    * Function to manage the next page click
    */
   const nextPageClicked = () => {
-    setState({ ...state, page: state.page + 1 })
+    dispatch({ type: 'next-page' })
   }
 
   /**
    * Function to manage the previous page click
    */
   const previousPageClicked = () => {
-    setState({ ...state, page: state.page - 1 })
+    dispatch({ type: 'previous-page' })
   }
 
   return (
